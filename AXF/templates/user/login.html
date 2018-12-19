@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% load static from staticfiles %}
+
+
+{% block content%}
+    <div id="login">
+ <form class="form-horizontal" action="{% url 'app:login' %}" method="post" style="text-align: center;font-size: 30px">
+  <div class="control-group">
+    <label class="control-label" for="username">Username</label>
+    <div class="controls">
+      <input type="text" id="inputUsername" placeholder="username" name="username">
+    </div>
+      <span id="checkusername"></span>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="inputPassword">Password</label>
+    <div class="controls">
+      <input type="password" id="inputPassword" placeholder="Password" name="password">
+    </div>
+  </div>
+     <span id="error" style="font-size: 30px; color: red">{{ msg }}</span>
+     <hr>
+     <br>
+  <div class="control-group" style="font-size: 60px">
+    <div class="controls">
+        <button type="button" class="btn" onclick="history.go(-1)">&lt;&lt;返回</button>
+        <button type="reset" class="btn">清空</button>
+      <button type="submit" class="btn">登录</button>
+    </div>
+  </div>
+</form>
+
+    </div>
+
+
+{% endblock %}
+
+{% block ext_js %}
+    <script type="text/javascript" src="{% static 'axf/user/js/login.js' %}"></script>
+{% endblock  %}

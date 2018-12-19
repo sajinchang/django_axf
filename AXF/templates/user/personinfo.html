@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <table style="text-align: center; font-size: 30px; margin: auto;border: #4cae4c" border="1">
+        <tr>
+            <td>用户名</td>
+            <td>{{ user.username }}</td>
+        </tr>
+        <tr>
+            <td>昵称</td>
+            <td>{{ user.nickname }}</td>
+        </tr>
+        <tr>
+            <td>地址</td>
+            <td>{{ user.address }}</td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td>{{ user.email }}</td>
+        </tr>
+        <tr>
+            <td>等级</td>
+            <td>{{ user.level }}</td>
+        </tr>
+    </table><br>
+    <hr>
+    <a href="{% url 'app:mine' %}">
+        <p style="font-size: 35px;text-align: center">&lt;&lt;返回</p>
+    </a>
+{% endblock %}
