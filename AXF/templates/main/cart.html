@@ -44,7 +44,7 @@
 
                 <ul>
                     {% for cart in carts %}
-                        <li class="menuList" cartid="{{ cart.id }}">
+                        <li class="menuList" goodid="{{ cart.goods_id.id }}">
                             <div class="confirm">
                                 <span class="select" cartid="{{ cart.id }}">
                                     {% if cart.is_select %}
@@ -85,7 +85,8 @@
                         <span id="total_price">{{ total_price }}</span>
                     </p>
 
-                    <a href="#">下单</a>
+{#                    <a href="#" id="makeorder">下单</a>#}
+                    <a href="{% url 'app:make_order' %}">下单</a>
                 </div>
 
             </section>

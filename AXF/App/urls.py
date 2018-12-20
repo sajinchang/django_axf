@@ -2,7 +2,6 @@
  -*- coding: utf-8 -*-
  @Time : 18-12-13 下午3:44
  @Author : SamSa
- @Site : 
  @File : urls.py
  @Software: PyCharm
  @Statement:
@@ -30,10 +29,14 @@ urlpatterns = [
     url(r'^person/', views.person, name='person'),
 
     # 购物车删减
-    url(r'^add_cart', views.add_cart, name='add_cart'),
+    url(r'^add_cart/', views.add_cart, name='add_cart'),
     # 单选
     url(r'^select/', views.select, name='select'),
     # 全选
     url(r'^select_all/', views.select_all, name='select_all'),
+
+    url(r'^make_order/', views.make_order, name='make_order'),
+    url(r'^pay/', views.pay, name='pay'),
+    url(r'^alipay/', views.alipay, name='alipay'),
 
 ]

@@ -20,7 +20,8 @@ LOGIN = [
 class LoginMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
-        print('-----------123-----------')
+        # print('-----------123-----------')
+        print(request.path)
         if request.path in LOGIN:
             print('-----------123-----------')
             username = request.session.get('username')
@@ -32,4 +33,5 @@ class LoginMiddleware(MiddlewareMixin):
                     print(e)
                     return redirect(reverse('app:login'))
             else:
+                print('-----------456-----------')
                 return redirect(reverse('app:login'))

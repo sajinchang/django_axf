@@ -167,3 +167,10 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = 'sajinde@163.com'
 EMAIL_HOST_PASSWORD = 'sajinchang124816'
 DEFAULT_FROM_EMAIL = 'sam <sajinde@163.com>'
+
+# 支付
+ALIPAY_APPID = "2016091800537304"
+
+APP_PRIVATE_KEY = open(os.path.join(BASE_DIR, 'alipay_config/app_rsa_private_key.pem'), 'r').read()
+
+ALIPAY_PUBLIC_KEY = open(os.path.join(BASE_DIR, 'alipay_config/alipay_rsa_public_key.pem'), 'r').read()

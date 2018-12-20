@@ -91,6 +91,9 @@ $(function () {
         $.get('/app/add_cart/', {'goodsid':goodsid,'way':'add'},function (data) {
             console.log(data);
             $add.prev().html(data['goods_num']);
+            // if (data['code'] == 201){
+            //     window.open('/app/login', target='_self')
+            // }
         });
             });
     $('.subShopping').click(function () {
@@ -99,6 +102,9 @@ $(function () {
          $.get('/app/add_cart/', {'goodsid':goodsid,'way':'sub'},function (data) {
             console.log(data);
             $add.prev().html(data['goods_num']);
+             // if (data['code'] == 201){
+             //     window.open('/app/login', target='_self')
+             // }
         });
 
     })

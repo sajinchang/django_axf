@@ -152,7 +152,7 @@ class Order(models.Model):
 class OrderGoods(models.Model):
     o_order = models.ForeignKey(Order)
     goods = models.ForeignKey(Goods)
-    goods_num = models.IntegerField()
+    goods_num = models.IntegerField(default=1)
 
     class Meta:
         db_table = 'order_goods'

@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from alipay import AliPay
 from django.contrib.auth.hashers import make_password, check_password
 from django.core.cache import cache
 from django.core.mail import send_mail
@@ -11,7 +12,8 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 
 from AXF import settings
-from App.models import Wheel, Nav, MustBuy, Shop, MainShow, User, FoodType, Goods, Cart
+from AXF.settings import ALIPAY_APPID, APP_PRIVATE_KEY, ALIPAY_PUBLIC_KEY
+from App.models import Wheel, Nav, MustBuy, Shop, MainShow, User, FoodType, Goods, Cart, Order, OrderGoods
 from App.views_contstant import ORDER_PRICE_DOWN, ORDER_PRICE_UP, ORDER_SALE_UP, ORDER_SALE_DOWN, ALLTYPE, \
     DEFAULT, sum_price
 
@@ -308,9 +310,12 @@ def add_cart(request):
     num = 0
     if carts.exists():
         cart = carts.first()
+        data['goodid'] = cart.goods_id_id
+        data['code'] = 200
         if way == 'add':
             cart.goods_num += 1
             num = cart.goods_num
+
             cart.save()
         elif way == 'sub':
             cart.goods_num -= 1
@@ -327,10 +332,12 @@ def add_cart(request):
             cart.goods_id_id = goods_id
             cart.user_id_id = user_id
             num = 1
+            data['goodid'] = cart.goods_id_id
             cart.save()
         elif way == 'sub':
             data['code'] = 201
 
+    # data['cartid'] = cartid
     data['msg'] = 'ok'
     data['goods_num'] = num
 
@@ -376,8 +383,9 @@ def select_all(request):
     if way == 'all':
         data['code'] = 200
         for cart in carts:
-            cart.is_select = True
-            cart.save()
+            if cart.is_select == False:
+                cart.is_select = True
+                cart.save()
 
         total_price = sum_price(carts=carts)
         data['total_price'] = total_price
@@ -388,10 +396,94 @@ def select_all(request):
         data['code'] = 200
         print(data['total_price'])
         for cart in carts:
-            cart.is_select = False
-            cart.save()
+            if cart.is_select == True:
+                cart.is_select = False
+                cart.save()
     else:
         data['code'] = 201
 
     print(data['total_price'])
     return JsonResponse(data=data)
+
+# 下单
+def make_order(request):
+    userid = request.session.get('userid')
+    # print(userid)
+    carts = Cart.objects.filter(user_id_id=userid).filter(is_select=True)
+
+    # 订单表
+    order = Order()
+    order.price = sum_price(carts)
+    order.o_user_id = userid
+    order.save()
+
+    # 订单商品表
+    for cart in carts:
+        order_goods = OrderGoods()
+        order_goods.o_order = order
+        order_goods.goods = cart.goods_id
+        order_goods.goods_num = cart.goods_num
+        order_goods.save()
+        cart.delete()
+
+    # print(order.ordergoods_set.all())
+    data = {
+        'code': 200,
+        'msg': 'ok',
+        'order': order,
+    }
+    return render(request, 'order/order_detail.html', context=data)
+
+
+def pay(request):
+    orderid = request.GET.get('orderid')
+    try:
+        order = Order.objects.get(pk=orderid)
+
+        order.status = True
+        order.save()
+
+        data = {
+            'code': 200,
+            'msg': 'ok',
+            'price': order.price,
+        }
+    except Exception as e:
+        print(e)
+        data = {
+            'code': 201,
+        }
+
+    return JsonResponse(data=data)
+
+
+def alipay(request):
+    orderid = request.GET.get('orderid')
+    print(orderid)
+
+    # 构建支付的科幻  AlipayClient
+    alipay_client = AliPay(
+        appid=ALIPAY_APPID,
+        app_notify_url=None,  # 默认回调url
+        app_private_key_string=APP_PRIVATE_KEY,
+        alipay_public_key_string=ALIPAY_PUBLIC_KEY,  # 支付宝的公钥，验证支付宝回传消息使用，不是你自己的公钥,
+        sign_type="RSA",  # RSA 或者 RSA2
+        debug=False  # 默认False
+    )
+    # 使用Alipay进行支付请求的发起
+
+    subject = "SAM购物商城"
+
+    # 电脑网站支付，需要跳转到https://openapi.alipay.com/gateway.do? + order_string
+    order_string = alipay_client.api_alipay_trade_page_pay(
+        out_trade_no="110",
+        total_amount= Order.objects.get(pk=orderid).price,
+        subject=subject,
+        return_url="http://www.baidu.com",
+        notify_url="http://www.baidu.com"  # 可选, 不填则使用默认notify url
+    )
+
+    # 客户端操作
+
+    return redirect("https://openapi.alipaydev.com/gateway.do?" + order_string)
+    # return HttpResponse('支付宝')
